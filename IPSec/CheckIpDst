@@ -1,0 +1,16 @@
+:local pointDNS mikrotik_cloud_dns_ip_here
+:local pointIP [: resolve $pointDNS];
+
+:local pointIPscope;
+set $pointIPscope "$pointIP/32";
+
+:local ipsecComment "ipsec_peer_comment_here";
+:local ipsecIP [/ip ipsec peer get [find comment=$ipsecComment] address];
+
+:if ($pointIPscope != $ipsecIP) do={
+        /ip ipsec policy set [find comment=$ipsecComment] sa-dst-address=$pointIP;
+        /ip ipsec peer set [find comment=$ipsecComment] address=$pointIPscope;
+
+} else= {
+ log info "IP Peer Not changed";
+}

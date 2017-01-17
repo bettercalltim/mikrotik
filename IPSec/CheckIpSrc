@@ -1,0 +1,14 @@
+:local localIP [/ip address get [find interface="interface_name_goes_here"] address]
+
+:for i from=( [:len $localIP] - 1) to=0 do={
+       :if ( [:pick $localIP $i] = "/") do={ 
+           :set localIP [:pick $localIP 0 $i]
+       } 
+   }
+
+:local ipsecIP [/ip ipsec policy get [find comment="ipsec_policy_comment_here"] sa-src-address];
+
+:if ($ipsecIP != $localIP) do={
+    log warning "IP Src changed"
+    /ip ipsec policy set [find comment="KM411_to_KM25"] sa-src-address=$localIP;
+}
